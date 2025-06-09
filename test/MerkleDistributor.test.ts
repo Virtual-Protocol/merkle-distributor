@@ -410,6 +410,48 @@ for (const contract of ['MerkleDistributor', 'MerkleDistributorWithDeadline']) {
           }
           expect(await token.balanceOf(distributor.address)).to.eq(0)
         })
+
+        describe('#withdraw', () => {
+          let distributor: Contract
+          let tree: BalanceTree
+          let otherToken: Contract
+          
+          beforeEach('deploy', async () => {
+            tree = new BalanceTree([
+              { account: wallet0.address, amount: BigNumber.from(100) },
+              { account: wallet1.address, amount: BigNumber.from(101) },
+            ])
+            distributor = await deployContract(distributorFactory, token.address, tree.getHexRoot(), contract)
+            await token.setBalance(distributor.address, 201)
+
+            // Deploy another token for testing adminWithdraw
+            const tokenFactory = await ethers.getContractFactory('TestERC20', wallet0)
+            otherToken = await tokenFactory.deploy('Other', 'OTHER', 0, overrides)
+            await otherToken.setBalance(distributor.address, 1000)
+          })
+
+          describe('adminWithdraw', () => {
+            it('only owner can admin withdraw', async () => {
+              distributor = distributor.connect(wallet1)
+              await expect(distributor.adminWithdraw(otherToken.address, 500, overrides))
+                .to.be.revertedWith('Ownable: caller is not the owner')
+            })
+
+            it('owner can withdraw specific amount of other tokens', async () => {
+              expect(await otherToken.balanceOf(wallet0.address)).to.eq(0)
+              await distributor.adminWithdraw(otherToken.address, 500, overrides)
+              expect(await otherToken.balanceOf(wallet0.address)).to.eq(500)
+              expect(await otherToken.balanceOf(distributor.address)).to.eq(500)
+            })
+
+            it('owner can withdraw main token through adminWithdraw', async () => {
+              expect(await token.balanceOf(wallet0.address)).to.eq(0)
+              await distributor.adminWithdraw(token.address, 50, overrides)
+              expect(await token.balanceOf(wallet0.address)).to.eq(50)
+              expect(await token.balanceOf(distributor.address)).to.eq(151)
+            })
+          })
+        })
       })
     })
   })
