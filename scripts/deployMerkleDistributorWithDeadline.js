@@ -6,9 +6,9 @@ async function main() {
   const MerkleDistributorWithDeadline = await ethers.getContractFactory('MerkleDistributorWithDeadline')
   const merkleDistributorWithDeadline = await MerkleDistributorWithDeadline.deploy(
     // USDC
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    '0xbe154afea9ba1e08729654a19c53952a892d6b37fe0b5d1bdf8ac4f51d03a426',
-    1688493524
+    '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+    '0x98b8ae85e23f20957562543840aab3b2f702646b8b754c643b09e8fb92a94cee',
+    1754574256
   )
   await merkleDistributorWithDeadline.deployed()
   console.log(`merkleDistributorWithDeadline deployed at ${merkleDistributorWithDeadline.address}`)

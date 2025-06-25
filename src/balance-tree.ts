@@ -28,10 +28,12 @@ export default class BalanceTree {
 
   // keccak256(abi.encode(index, account, amount))
   public static toNode(index: number | BigNumber, account: string, amount: BigNumber): Buffer {
-    return Buffer.from(
+    const node = Buffer.from(
       utils.solidityKeccak256(['uint256', 'address', 'uint256'], [index, account, amount]).substr(2),
       'hex'
     )
+    console.log(`index: ${index}, account: ${account}, amount: ${amount}, node: ${node.toString('hex')}`)
+    return node
   }
 
   public getHexRoot(): string {

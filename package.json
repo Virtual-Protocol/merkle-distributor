@@ -27,6 +27,7 @@
     "test": "npx hardhat test"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.14",
     "@openzeppelin/contracts": "4.7.0"
   },
   "devDependencies": {
